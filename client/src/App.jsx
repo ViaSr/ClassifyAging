@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import DataSection from './components/DataSection'
 import HallmarksSection from './components/HallmarksSection'
 import ResourcesPage from './pages/ResourcesPage'
+import GlossaryPage from './pages/GlossaryPage'
 import ChatPanel from './components/ChatPanel'
 
 function HomePage() {
@@ -23,6 +24,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/glossary" element={<GlossaryPage />} />
       </Routes>
       <ChatPanel />
     </BrowserRouter>

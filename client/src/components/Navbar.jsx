@@ -11,6 +11,7 @@ export default function Navbar() {
           <li><a href="/#data">The Data</a></li>
           <li><a href="/#hallmarks">Hallmarks</a></li>
           <li><Link to="/resources">Resources</Link></li>
+          <li><Link to="/glossary">Glossary</Link></li>
         </ul>
       </div>
     </nav>
