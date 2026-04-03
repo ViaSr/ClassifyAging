@@ -1,4 +1,4 @@
-# ClassifyAging
+# ClassifyAging #
 
 **Aging is the leading cause of human suffering and death. It's time we treated it like one.**
 
@@ -7,6 +7,7 @@ ClassifyAging is a full-stack advocacy and research platform making the scientif
 ## The Argument
 
 Every major disease that kills humans — cancer, cardiovascular disease, Alzheimer's, diabetes — shares a single dominant risk factor: **age**. Yet aging itself is not classified as a disease by the FDA, blocking funding, clinical trials, and drug approvals that could target the root cause rather than individual symptoms.
+
 
 The science is clear:
 - Aging has identifiable biomarkers (telomere attrition, epigenetic drift, cellular senescence)
@@ -17,6 +18,10 @@ The science is clear:
 The only barrier to classification is cultural inertia — not evidence.
 
 ## Tech Stack
+A full-stack web platform built with .NET 8 and React, making the 
+scientific case for reclassifying biological aging as a treatable 
+disease. Includes a research library, data visualizations, and an 
+AI-powered research assistant built on the Claude API.
 
 ### Backend — .NET 8 Web API
 - ASP.NET Core 8 with clean architecture (Controllers → Services → Repositories)
