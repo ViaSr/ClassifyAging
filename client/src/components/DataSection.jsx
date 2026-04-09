@@ -106,7 +106,7 @@ export default function DataSection() {
       <div style={styles.grid}>
         <div style={styles.chartCard}>
           <div style={styles.chartTitle}>All-cause mortality rate by age</div>
-          <div style={styles.chartSub}>Deaths per 1,000 people (US, age-adjusted)</div>
+          <div style={styles.chartSub}>Deaths per 1,000 people (US, age-adjusted)Source: CDC National Vital Statistics, 2020</div>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={mortalityData} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" />
@@ -120,7 +120,7 @@ export default function DataSection() {
 
         <div style={styles.chartCard}>
           <div style={styles.chartTitle}>Disease risk multiplier by age</div>
-          <div style={styles.chartSub}>Relative risk compared to age 30 baseline</div>
+          <div style={styles.chartSub}>Relative risk compared to age 30 baseline Adapted from NIA epidemiological data</div>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={diseaseRiskData} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" />
