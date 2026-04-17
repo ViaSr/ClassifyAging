@@ -27,4 +27,17 @@ public class ChatController : ControllerBase
         var reply = await _chatService.GetResponseAsync(request);
         return Ok(new ChatResponse(reply));
     }
+    [HttpPost("stream")]
+public async Task StreamChat([FromBody] ChatRequest request, CancellationToken ct)
+{
+    Response.ContentType = "text/event-stream";
+    Response.Headers.Append("Cache-Control", "no-cache");
+    Response.Headers.Append("X-Accel-Buffering", "no"); // disables nginx buffering
+
+    await foreach (var chunk in _chatService.StreamResponseAsync(request, ct))
+    {
+        await Response.WriteAsync($"data: {chunk}\n\n", ct);
+        await Response.Body.FlushAsync(ct);
+    }
+}
 }

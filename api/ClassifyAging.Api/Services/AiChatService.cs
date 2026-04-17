@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using ClassifyAging.Api.DTOs;
+using System.Runtime.CompilerServices;
 
 namespace ClassifyAging.Api.Services;
 
@@ -105,4 +106,68 @@ public class AiChatService
             return "I'm sorry, I encountered an error processing your question. Please try again.";
         }
     }
+    public async IAsyncEnumerable<string> StreamResponseAsync(
+    ChatRequest request,
+    [EnumeratorCancellation] CancellationToken ct = default)
+{
+    var messages = new List<object>();
+    if (request.History != null)
+    {
+        foreach (var msg in request.History)
+            messages.Add(new { role = msg.Role, content = msg.Content });
+    }
+    messages.Add(new { role = "user", content = request.Message });
+
+    var payload = new
+    {
+        model = "claude-sonnet-4-20250514",
+        max_tokens = 1024,
+        system = SystemPrompt,
+        messages,
+        stream = true,            // the one Anthropic-side change
+    };
+
+    var json = JsonSerializer.Serialize(payload);
+    using var httpRequest = new HttpRequestMessage(
+        HttpMethod.Post, "https://api.anthropic.com/v1/messages")
+    {
+        Content = new StringContent(json, Encoding.UTF8, "application/json"),
+    };
+    httpRequest.Headers.Add("x-api-key", _apiKey);
+    httpRequest.Headers.Add("anthropic-version", "2023-06-01");
+
+    // KEY: ResponseHeadersRead — don't buffer the whole body
+    using var response = await _httpClient.SendAsync(
+        httpRequest, HttpCompletionOption.ResponseHeadersRead, ct);
+
+    if (!response.IsSuccessStatusCode)
+    {
+        var body = await response.Content.ReadAsStringAsync(ct);
+        _logger.LogError("Claude API error {Status}: {Body}", response.StatusCode, body);
+        yield return "I'm having trouble connecting to my knowledge base right now.";
+        yield break;
+    }
+
+    using var stream = await response.Content.ReadAsStreamAsync(ct);
+    using var reader = new StreamReader(stream);
+
+    while (!reader.EndOfStream)
+    {
+        var line = await reader.ReadLineAsync(ct);
+        if (string.IsNullOrEmpty(line)) continue;      // blank line = event terminator
+        if (!line.StartsWith("data: ")) continue;      // skip "event:" lines, pings, etc.
+
+        var dataJson = line["data: ".Length..];
+
+        using var doc = JsonDocument.Parse(dataJson);
+        var root = doc.RootElement;
+        if (root.TryGetProperty("type", out var typeProp) &&
+            typeProp.GetString() == "content_block_delta" &&
+            root.TryGetProperty("delta", out var delta) &&
+            delta.TryGetProperty("text", out var text))
+        {
+            yield return text.GetString() ?? "";
+        }
+    }
+}
 }
