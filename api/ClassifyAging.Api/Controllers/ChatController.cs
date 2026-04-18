@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ClassifyAging.Api.Services;
 using ClassifyAging.Api.DTOs;
+using System.Text.Json;
 
 namespace ClassifyAging.Api.Controllers;
 
@@ -36,7 +37,7 @@ public async Task StreamChat([FromBody] ChatRequest request, CancellationToken c
 
     await foreach (var chunk in _chatService.StreamResponseAsync(request, ct))
     {
-        await Response.WriteAsync($"data: {chunk}\n\n", ct);
+        await Response.WriteAsync($"data: {JsonSerializer.Serialize(chunk)}\n\n", ct);
         await Response.Body.FlushAsync(ct);
     }
 }
