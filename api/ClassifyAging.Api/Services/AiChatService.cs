@@ -2,6 +2,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using ClassifyAging.Api.DTOs;
+using ClassifyAging.Api.Options;
+using Microsoft.Extensions.Options;
 using System.Runtime.CompilerServices;
 
 namespace ClassifyAging.Api.Services;
@@ -9,7 +11,8 @@ namespace ClassifyAging.Api.Services;
 public class AiChatService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _apiKey;
+    private readonly string? _apiKey;
+    private readonly IOptionsMonitor<ChatOptions> _options;
     private readonly ILogger<AiChatService> _logger;
 
     private const string SystemPrompt = """
@@ -40,12 +43,19 @@ public class AiChatService
         - Keep responses focused and concise — aim for 2-4 paragraphs unless more detail is requested.
         """;
 
-    public AiChatService(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<AiChatService> logger)
+    public AiChatService(
+        IConfiguration configuration,
+        IHttpClientFactory httpClientFactory,
+        IOptionsMonitor<ChatOptions> options,
+        ILogger<AiChatService> logger)
     {
         _httpClient = httpClientFactory.CreateClient("Anthropic");
-        _apiKey = configuration["AnthropicApiKey"]
-            ?? throw new InvalidOperationException("AnthropicApiKey not configured. Add it to appsettings.json.");
+        _apiKey = configuration["AnthropicApiKey"];
+        _options = options;
         _logger = logger;
+
+        if (string.IsNullOrEmpty(_apiKey))
+            _logger.LogWarning("AnthropicApiKey not configured. Chat endpoints will fail when called.");
     }
 
     public async Task<string> GetResponseAsync(ChatRequest request)
@@ -64,9 +74,12 @@ public class AiChatService
         // Add the current user message
         messages.Add(new { role = "user", content = request.Message });
 
+        if (string.IsNullOrEmpty(_apiKey))
+            return "The AI assistant is not configured on this server.";
+
         var payload = new
         {
-            model = "claude-sonnet-4-20250514",
+            model = _options.CurrentValue.Model,
             max_tokens = 1024,
             system = SystemPrompt,
             messages
@@ -118,13 +131,19 @@ public class AiChatService
     }
     messages.Add(new { role = "user", content = request.Message });
 
+    if (string.IsNullOrEmpty(_apiKey))
+    {
+        yield return "The AI assistant is not configured on this server.";
+        yield break;
+    }
+
     var payload = new
     {
-        model = "claude-sonnet-4-20250514",
+        model = _options.CurrentValue.Model,
         max_tokens = 1024,
         system = SystemPrompt,
         messages,
-        stream = true,            // the one Anthropic-side change
+        stream = true,
     };
 
     var json = JsonSerializer.Serialize(payload);

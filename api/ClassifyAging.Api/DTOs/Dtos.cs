@@ -46,3 +46,4 @@ public record PagedResult<T>(
 public record ChatRequest(string Message, List<ChatMessage>? History);
 public record ChatMessage(string Role, string Content);
 public record ChatResponse(string Reply);
+public record ChatStatusResponse(bool Enabled);

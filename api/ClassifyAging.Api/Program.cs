@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ClassifyAging.Api.Data;
+using ClassifyAging.Api.Options;
 using ClassifyAging.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
         ?? "Data Source=classifyaging.db"));
+
+// Options
+builder.Services.Configure<ChatOptions>(builder.Configuration.GetSection(ChatOptions.SectionName));
 
 // Services
 builder.Services.AddScoped<HallmarkService>();

@@ -30,6 +30,7 @@ export const resourcesApi = {
 };
 
 export const chatApi = {
+  status: () => request('/chat/status'),
   send: (message, history = []) =>
     request('/chat', {
       method: 'POST',

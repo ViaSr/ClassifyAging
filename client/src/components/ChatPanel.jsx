@@ -156,7 +156,16 @@ export default function ChatPanel() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [enabled, setEnabled] = useState(null) // null = unknown, true/false once resolved
   const messagesEnd = useRef(null)
+
+  useEffect(() => {
+    let cancelled = false
+    chatApi.status()
+      .then(res => { if (!cancelled) setEnabled(Boolean(res?.enabled)) })
+      .catch(() => { if (!cancelled) setEnabled(false) })
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' })
@@ -195,6 +204,8 @@ export default function ChatPanel() {
     }
   }
 
+  if (enabled === null) return null // resolving status — don't flash the FAB
+
   if (!open) {
     return (
       <button
@@ -202,10 +213,44 @@ export default function ChatPanel() {
         onClick={() => setOpen(true)}
         onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)' }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        title="Ask the AI Research Assistant"
+        title={enabled ? 'Ask the AI Research Assistant' : 'AI Research Assistant (offline)'}
       >
         <MessageCircle size={24} />
       </button>
+    )
+  }
+
+  if (!enabled) {
+    return (
+      <div style={styles.panel}>
+        <div style={styles.header}>
+          <div>
+            <div style={styles.headerTitle}>Research Assistant</div>
+            <div style={styles.headerSub}>Offline for this demo</div>
+          </div>
+          <button style={styles.closeBtn} onClick={() => setOpen(false)}>
+            <X size={18} />
+          </button>
+        </div>
+        <div style={{ ...styles.messages, justifyContent: 'center', textAlign: 'center' }}>
+          <div style={styles.welcomeTitle}>AI Assistant is offline</div>
+          <p style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
+            The live AI assistant is disabled on this public demo to control API costs.
+          </p>
+          <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 12 }}>
+            This project is open source — clone the repo and run it locally with your
+            own Anthropic API key to try the full experience.
+          </p>
+          <a
+            href="https://github.com/ViaSr/ClassifyingAging"
+            target="_blank"
+            rel="noreferrer"
+            style={{ ...styles.suggestion, marginTop: 20, display: 'inline-block', textDecoration: 'none' }}
+          >
+            View on GitHub →
+          </a>
+        </div>
+      </div>
     )
   }
 
