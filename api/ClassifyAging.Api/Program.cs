@@ -60,6 +60,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("DevCors");
+
+// Serve the built React SPA from wwwroot/ in production.
+// In Development the wwwroot folder is typically empty (client runs on Vite :5173),
+// so these middlewares are effectively no-ops and the SPA fallback only fires for
+// unmatched API routes. In a published deploy, wwwroot contains the Vite build output
+// and MapFallbackToFile hands React Router every non-/api route.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 app.Run();

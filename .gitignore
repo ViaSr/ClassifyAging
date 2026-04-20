@@ -20,6 +20,9 @@ dist/
 .env.local
 .env.production
 
+# Local-built SPA bundle copied into API by CI — never committed
+api/ClassifyAging.Api/wwwroot/
+
 # IDE
 .vs/
 .vscode/
@@ -30,3 +33,6 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code local workspace (worktrees, per-machine settings)
+.claude/
