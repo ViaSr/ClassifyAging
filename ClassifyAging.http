@@ -1,7 +1,0 @@
-### Streaming chat endpoint
-POST http://localhost:5000/api/chat/stream
-Content-Type: application/json
-
-{
-  "message": "Explain telomere attrition in one paragraph"
-}

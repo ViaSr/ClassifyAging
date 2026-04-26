@@ -5,8 +5,10 @@ obj/
 *.suo
 *.cache
 *.dll
+*.exe
 *.pdb
 *.log
+*.sln
 appsettings.json
 !appsettings.example.json
 *.db
@@ -33,6 +35,3 @@ api/ClassifyAging.Api/wwwroot/
 # OS
 .DS_Store
 Thumbs.db
-
-# Claude Code local workspace (worktrees, per-machine settings)
-.claude/
