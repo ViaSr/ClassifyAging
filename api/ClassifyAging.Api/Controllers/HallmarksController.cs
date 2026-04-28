@@ -15,9 +15,7 @@ public class HallmarksController : ControllerBase
         _service = service;
     }
 
-    /// <summary>
     /// Get all 12 hallmarks of aging, ordered by category and sort order.
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<HallmarkDto>>> GetAll()
     {
@@ -25,9 +23,8 @@ public class HallmarksController : ControllerBase
         return Ok(hallmarks);
     }
 
-    /// <summary>
+ 
     /// Get a single hallmark by its URL slug.
-    /// </summary>
     [HttpGet("{slug}")]
     public async Task<ActionResult<HallmarkDto>> GetBySlug(string slug)
     {
