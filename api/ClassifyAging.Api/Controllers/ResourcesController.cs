@@ -15,9 +15,7 @@ public class ResourcesController : ControllerBase
         _service = service;
     }
 
-    /// <summary>
     /// Search and filter resources with pagination.
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<PagedResult<ResourceDto>>> GetAll(
         [FromQuery] string? search,
@@ -33,9 +31,7 @@ public class ResourcesController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
     /// Get a single resource by ID.
-    /// </summary>
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ResourceDto>> GetById(int id)
     {
