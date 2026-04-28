@@ -20,19 +20,14 @@ public class ChatController : ControllerBase
         _options = options;
     }
 
-    /// <summary>
-    /// Reports whether the AI chat feature is currently enabled. UI polls this to decide
-    /// between rendering the chat widget and an "offline" notice.
-    /// </summary>
+    /// Reports is AI feature is set to enabled/true in ChatOptions. UI polls this to decide between rendering the chat widget and an "offline" notice.
     [HttpGet("status")]
     public ActionResult<ChatStatusResponse> Status()
     {
         return Ok(new ChatStatusResponse(_options.CurrentValue.Enabled));
     }
 
-    /// <summary>
-    /// Send a message to the AI research assistant. Optionally include conversation history for context.
-    /// </summary>
+    /// Send a message to the AI. Optionally include conversation history for context(REVISIT).
     [HttpPost]
     public async Task<ActionResult<ChatResponse>> Chat([FromBody] ChatRequest request)
     {
